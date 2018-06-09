@@ -1,6 +1,10 @@
 package com.selenium.asxnews;
 
 import com.selenium.asxnews.controller.AsxNews;
+import com.selenium.asxnews.data.entity.AsxNewsDocument;
+import com.selenium.asxnews.data.repo.AsxNewsRepo;
+import com.selenium.asxnews.service.ElasticNewsService;
+import lombok.SneakyThrows;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -24,7 +29,25 @@ import java.util.regex.Pattern;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AsxnewsApplicationTests {
+    @Autowired  AsxNews asxNews;
+    @Resource
+    AsxNewsRepo asxNewsRepo;
+@Autowired
+ElasticNewsService fundNewsService;
+    @Test
+    public void testrepo() {
+        AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
+        asxnewsdoc.setCode("test");
+        asxnewsdoc.setTitle("test");
+        asxnewsdoc.setNotes("test");
 
+        asxNewsRepo.save(asxnewsdoc);
+    }
+    @Test
+    public void testrunAsxNews() {
+        System.out.println("---------------------testrunAsxNews----------------");
+        fundNewsService.setAllElasticNews();
+    }
     @Test
     public void contextLoads() {
         System.out.println("---------------------contextLoads----------------");
@@ -69,7 +92,74 @@ public class AsxnewsApplicationTests {
         }
     }
 
-    @Autowired  AsxNews asxNews;
+
+    @Test
+    public void soupTwo() {
+        String urls =  "https://hotcopper.com.au/announcements/";
+        Document doc = null;
+        ArrayList<AsxNewsDocument> arr = new ArrayList<>();
+
+        try {
+
+            doc = Jsoup.connect(urls)
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11")
+                    .timeout(3000)
+                    .post();
+
+            Elements links = doc.select("li.post-item  ");
+            Element link;
+//            String pattern = ".*documentdownload.*";
+
+            for(int j=0;j<links.size();j++) {
+                link = links.get(j);
+                Elements elems = link.children();
+                AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
+                //elems.forEach((a)->{
+                for (Element a : elems) {
+                    //System.out.println("******************************"+a.hasClass("listblock file-size extra-small-hide") );
+                    //  System.out.println("******************************"+a.select("div[class=listblock tags small-hide]").first().text() );
+                    //  System.out.println("******************************"+a.attr("class") );
+                    if(a.attr("class").equals("listblock tags small-hide") ){
+                       // System.out.println("------------CODE---------------"+a.text()  + " " );
+                        asxnewsdoc.setCode(a.text() );
+
+                    }
+                    if(a.attr("class").equals("listblock summary") ){
+                     //   System.out.println("------------summary---------------"+a.text()  + " " );
+                        asxnewsdoc.setTitle (a.text() );
+
+                    }
+                    if(a.attr("class").equals("listblock file-size extra-small-hide") ){
+                      //  System.out.println("------------summary---------------"+a.children().first().attr("abs:href"));
+                        asxnewsdoc.setLink (a.children().first().attr("abs:href"));
+
+                        System.out.println("---------------------parseNews----------------"+asxnewsdoc);
+                        arr.add(asxnewsdoc);
+                        asxnewsdoc = new AsxNewsDocument();
+                    }
+
+                }
+
+
+
+
+               // });
+
+            }
+
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
 
     @Test
     public void runjob() {
@@ -117,12 +207,14 @@ public class AsxnewsApplicationTests {
             e.printStackTrace();
         }
     }
+
+    @SneakyThrows
     public void loadData(String urls) {
         System.out.println("---------------------contextLoads----------------");
         HttpURLConnection connection = null;
 
         StringBuilder sb =  new StringBuilder();
-
+        PDDocument document=null;
         try {
 
 
@@ -132,7 +224,7 @@ public class AsxnewsApplicationTests {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 
             InputStream is = connection.getInputStream();
-            PDDocument document = PDDocument  .load(is);
+             document = PDDocument  .load(is);
             System.out.println("---------------------contextLoads---------------- "+ document.isEncrypted());
 
             //  if (!document.isEncrypted() ) {
@@ -155,6 +247,11 @@ public class AsxnewsApplicationTests {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            if (document != null) {
+                document.close();
+            }
         }
     }
 }

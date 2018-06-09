@@ -3,6 +3,7 @@ package com.selenium.asxnews.controller;
 import com.selenium.asxnews.data.entity.FundNews;
 import com.selenium.asxnews.parser.AsxNewsParser;
 
+import com.selenium.asxnews.service.ElasticNewsService;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class AsxNews {
     private String seleniumpath;
     @Autowired
     AsxNewsParser parser;
+
+    @Autowired
+    ElasticNewsService elasticNewsService;
 
     public void run(){
 
@@ -78,6 +82,7 @@ public class AsxNews {
             driver.quit();
         }
         System.out.println("Run news parser : ");
+        elasticNewsService.setAllElasticNews();
         return arr;
 
 
