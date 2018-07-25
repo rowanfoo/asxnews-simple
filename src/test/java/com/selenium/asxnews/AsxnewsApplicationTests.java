@@ -1,6 +1,6 @@
 package com.selenium.asxnews;
 
-import com.selenium.asxnews.controller.AsxNews;
+import com.selenium.asxnews.controller.AsxNewsController;
 import com.selenium.asxnews.data.entity.AsxNewsDocument;
 import com.selenium.asxnews.data.repo.AsxNewsRepo;
 import com.selenium.asxnews.service.ElasticNewsService;
@@ -8,6 +8,8 @@ import lombok.SneakyThrows;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
@@ -23,17 +28,87 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AsxnewsApplicationTests {
-    @Autowired  AsxNews asxNews;
+    @Autowired
+    AsxNewsController asxNewsController;
     @Resource
     AsxNewsRepo asxNewsRepo;
 @Autowired
+
 ElasticNewsService fundNewsService;
+
+
+
+    @Autowired
+    ElasticsearchTemplate elasticsearchTemplate;
+
+
+
+    @Test
+    public void testmultipledata() {
+//        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+//                .withQuery(matchQuery("notes", "lowest cost "))
+//                .build();
+//        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList(searchQuery, AsxNewsDocument.class);
+//
+//        System.out.println("----------------------QUERY---------------"+searchQuery.getQuery());
+//
+//        articles.forEach((a)->{ System.out.println("---------------------datessssssss----------------"+a.getId() +" : " +   a.getTitle()+ "  " + a.getDate());        } );
+//        // System.out.println("---------------------datessssssss----------------"+ articles);
+
+        NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+        QueryBuilder boolQueryBuilder = boolQuery()
+                .must(matchQuery("notes", "low") )
+                .must(matchQuery("date", "2018-05-28"));
+        searchQueryBuilder.withQuery(boolQueryBuilder);
+        SearchQuery searchQuery  = searchQueryBuilder.build();
+
+
+
+        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList( searchQuery, AsxNewsDocument.class);
+        System.out.println("----------------------QUERY---------------"+searchQuery.getQuery());
+        articles.forEach((a)->{ System.out.println("---------------------datessssssss----------------"+a.getId() +" : " +   a.getTitle()+ "  " + a.getDate());        } );
+
+
+    }
+
+
+
+    @Test
+    public void testdata() {
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(matchQuery("notes", "lowest cost "))
+                .build();
+        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList(searchQuery, AsxNewsDocument.class);
+        articles.forEach((a)->{ System.out.println("---------------------datessssssss----------------"+a.getId() +" : " +   a.getTitle());        } );
+       // System.out.println("---------------------datessssssss----------------"+ articles);
+
+
+    }
+
+
+
+    @Test
+    public void testdate() {
+String date = "29/05/18 07:32";
+
+        LocalDate fromCustomPattern = LocalDate.parse(date.substring(0,date.indexOf(" ")) , DateTimeFormatter.ofPattern("dd/MM/yy"));
+        System.out.println("---------------------testdate----------------"+ fromCustomPattern);
+    }
+
+
     @Test
     public void testrepo() {
         AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
@@ -46,7 +121,12 @@ ElasticNewsService fundNewsService;
     @Test
     public void testrunAsxNews() {
         System.out.println("---------------------testrunAsxNews----------------");
-        fundNewsService.setAllElasticNews();
+        fundNewsService.importElasticNews(true);
+    }
+    @Test
+    public void testrunloppAsxNews() {
+        System.out.println("---------------------testrunloppAsxNews----------------");
+        fundNewsService.setLoopElasticNews();
     }
     @Test
     public void contextLoads() {
@@ -164,7 +244,7 @@ ElasticNewsService fundNewsService;
     @Test
     public void runjob() {
         System.out.println("---------------------runjob----------------");
-        asxNews.news ();
+        asxNewsController.news ();
     }
 
 
