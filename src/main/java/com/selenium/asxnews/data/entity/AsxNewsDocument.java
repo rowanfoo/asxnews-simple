@@ -1,9 +1,13 @@
 package com.selenium.asxnews.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDate;
 @Document(indexName = "asxnews", type = "news")
@@ -17,10 +21,14 @@ public class AsxNewsDocument  {
     private String  title;
     private String  notes;
     private String   link;
-    private LocalDate date;
+
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+   // @Field(type = FieldType.Date, format = DateFormat.basic_date)
+    //private LocalDate date;
+    private String date;
 
     public AsxNewsDocument(){
-        date = LocalDate.now();
+    //    date = LocalDate.now();
     }
 
 
@@ -28,7 +36,7 @@ public class AsxNewsDocument  {
         this.code = code;
         this.title = title;
         this.link = link;
-        date = LocalDate.now();
+     //  date = LocalDate.now();
 
     }
 
