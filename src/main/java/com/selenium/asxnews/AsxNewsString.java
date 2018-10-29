@@ -15,10 +15,7 @@ public class AsxNewsString  {
     AsxNewsString(String html){
         htmlToParse=html;
         System.out.println("AsxNewsString");
-        //logger.info("AsxNewsString run 1");
-
         run();
-        //close();
     }
 
 
@@ -35,14 +32,11 @@ public class AsxNewsString  {
             Document doc = Jsoup.parse(htmlToParse)  ;
 
             Elements table = doc.select("table");
-            //	System.out.println("CORRECT doc:" + doc);
-            //	System.out.println("CORRECT TABLE:" + table);
 
             System.out.println("RUNB 12");
             String asxUrl="http://www.asx.com.au/";
             HashSet codes = new HashSet();
-         //   ArrayList<NewsAccess> myarr = new ArrayList<NewsAccess>();
-            System.out.println("RUNB 13");
+
             for (Element tb : table) {
                 System.out.println("TB 1:" );
                 String t = tb.attr("class");
@@ -121,16 +115,6 @@ public class AsxNewsString  {
 
             }
 
-//            if(myarr.isEmpty())logger.severe("AsxNewsString NO NEWS " );
-//
-//
-//            try (DAOFactoryNews dc = new DAOFactoryNews()) {
-//                dc.insertNewNews(myarr);
-//            } catch (Exception e) {
-//                logger.severe("AsxNewsString Error insertNews " + e);
-//
-//
-//            }
 
             System.out.println("FINISH ");
 
