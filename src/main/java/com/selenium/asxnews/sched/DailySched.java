@@ -9,10 +9,14 @@ import org.springframework.stereotype.Component;
 public class DailySched {
     @Autowired
     ElasticNewsService fundNewsService;
+    @Autowired
+    ElasticNewsService elasticNewsService;
 
     @Scheduled(cron = "0 16 15 ? * MON-FRI")
     public void run(){
-        fundNewsService.importElasticNews(true);
+      //  fundNewsService.importElasticNews(true);
+  //      elasticNewsService.importnews(true);
+        elasticNewsService.importnewsbydate();
     }
 
 }
