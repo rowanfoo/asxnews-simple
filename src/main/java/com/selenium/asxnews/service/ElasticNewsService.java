@@ -42,85 +42,24 @@ public class ElasticNewsService {
     AsxNewsRepo asxNewsRepo;
     String urls =  "";
 
-
-
-
-    /**
-     * used for running loop
-     * In past was used to get all data
-     */
-//    public void setLoopElasticNews(){
-//
-//        for (int x =0;x<26;x++){
-//            urls =  "https://hotcopper.com.au/announcements/page-"+x;
-//            ArrayList<AsxNewsDocument> arr = parseNews();
-//            log.info("------------ URLS--" + urls);
-//
-//            arr.forEach((a)->{
-//
-//                String text = loadData(a.getLink());
-//
-//                try {
-//                    int number = new Random().nextInt(30);
-//                    TimeUnit.SECONDS.sleep(number);
-//                } catch (InterruptedException e) {e.printStackTrace();}
-//
-//                if(text != null){
-//                    a.setNotes(text);
-//                    System.out.println( "----- SAVE--------" +a.getCode()  );
-//                    log.info( "----- SAVE--------" +a.getCode()   +  "   index:  "+ a.getDate()  );
-//                    asxNewsRepo.save(a);
-//                };
-//
-//            });
-//
-//        }
-//    }
     @Autowired
     HtmlPage page;
     @Autowired
     AsxNewsParser hotcopperParser;
     @Autowired
     Loadhref href;
-//    @SneakyThrows
-//    public void setLoopElasticNews(){
-//        System.out.println( "----- setLoopElasticNews--------"  );
-//        page.loadbasePage();
-//        for (int x =0;x<28;x++){
-//
-//            urls ="https://hotcopper.com.au/announcements/asx/page-"+x +"/";
-//            String s = page.getPage(urls);
-//            ArrayList<AsxNewsDocument> arr =hotcopperParser.parse(s);
-//            log.info("------------ URLS--" + urls);
-//
-//            arr.forEach((a)->{
-//                System.out.println( "----- Load data--------"  );
-//
-//                String text = href. loadData(a.getLink());
-//                System.out.println( "----- Load data 2--------"  );
-//
-//                try {
-//                    int number = new Random().nextInt(30);
-//                    TimeUnit.SECONDS.sleep(number);
-//                } catch (InterruptedException e) {e.printStackTrace();}
-//
-//                if(text != null){
-//                    a.setNotes(text);
-////                    System.out.println( "----- SAVE--------" +a.getCode()  );
-//                    System.out.println( "----- SAVE--------" +a );
-//
-//                    log.info( "----- SAVE--------" +a.getCode()   +  "   index:  "+ a.getDate()  );
-//                    asxNewsRepo.save(a);
-//                };
-//
-//            });
-//
-//        }
-//    }
+
+
+    /**
+     *  import all news for today
+     */
     public   void importnewsbydate() {
         importnews(true , 0);
 
     }
+    /**
+     * import to what page no
+     */
     public   void importnewsbypage(int pageno) {
         importnews(false , pageno);
 
@@ -172,157 +111,6 @@ public class ElasticNewsService {
 
 
 
-    /**
-     * Run daily to import today
-     * @param stopdate
-     */
- //   public void importElasticNews(){
-//        System.out.println("---------------------soup4----------------"  ;
-////        AtomicBoolean  bool = new AtomicBoolean(true);
-////        "https://hotcopper.com.au/announcements/page-"+count;
-//        for (int count =1;count<201 && bool.get() ;count++){
-//            urls =  "https://hotcopper.com.au/announcements/asx/page-"+count   +"/";
-//
-//            String s = page.getPage(urls,true);
-////        System.out.println("---------------------soup4----------------" + s) ;
-//            ArrayList<AsxNewsDocument> arr = hotcopperParser.parse(s);
-//
-//
-//
-//            arr.forEach((a)->{
-//
-//
-//                String text = loadData(a.getLink());
-//
-//                try {
-//                    int number = new Random().nextInt(60);
-//                    TimeUnit.SECONDS.sleep(number);
-//                } catch (InterruptedException e) {e.printStackTrace();}
-//
-//                if(text != null){
-//                    a.setNotes(text);
-//                    System.out.println( "----- SAVE--------" +a.getCode()  );
-//                    log.info("------------ SAVE --" + a.getCode()   + " -" + a.getDate());
-//
-//                   //   asxNewsRepo.save(a);
-//                };
-//
-//            });
-//
-//        }
-//    }
-
-
-
-
-    private ArrayList<AsxNewsDocument>   parseNews() {
-
-        Document doc = null;
-        ArrayList<AsxNewsDocument> arr = new ArrayList<>();
-        System.out.println( "-----run parseNews " );
-
-        try {
-
-            doc = Jsoup.connect(urls)
-                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11")
-                    .timeout(3000)
-                    .post();
-            System.out.println( "-----here " );
-//            Elements links = doc.select("li.post-item  ");
-            Elements links = doc.select(".table is-fullwidth is-hidden-touch");
-
-            System.out.println( "-----here******** "  +doc.select("table[class*=table]").first());
-            System.out.println( "-----link " +  links);
-               Element link;
-
-            for(int j=0;j<links.size();j++) {
-                link = links.get(j);
-
-
-                Elements elems = link.children();
-                AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
-
-                for (Element a : elems) {
-                    if(a.attr("class").equals("listblock tags small-hide") ){
-                        System.out.println( "-----x" + a.text() );
-                        asxnewsdoc.setCode(a.text() );
-
-                    }
-                    if(a.attr("class").equals("listblock summary") ){
-                        System.out.println( "-----y" + a.text() );
-
-                        asxnewsdoc.setTitle (a.text() );
-
-                    }
-                    if(a.attr("class").equals("listblock time time-data") ){
-                        System.out.println( "----- DATE---------" + a.text() );
-
-
-                        LocalDate date = LocalDate.parse(a.text() .substring(0,a.text() .indexOf(" ")) , DateTimeFormatter.ofPattern("dd/MM/yy"));
-//                        asxnewsdoc.setDate(date.toString() );
-
-                    }
-                    if(a.attr("class").equals("listblock file-size extra-small-hide") ){
-                       // System.out.println( "-----z " + a.text() );
-if(a.children().first() != null) {
-    //System.out.println("-----zzz-----  " + a.children().first().attr("abs:href"));
-    asxnewsdoc.setLink(a.children().first().attr("abs:href"));
-    arr.add(asxnewsdoc);
-    asxnewsdoc = new AsxNewsDocument();
-}
-                    }
-
-                }
-
-            }
-
-
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return arr;
-    }
-//     @SneakyThrows
-//     private  String  loadData(String urls) {
-//        HttpURLConnection connection = null;
-//
-//        StringBuilder sb =  new StringBuilder();
-//        PDDocument document =null;
-//        String notes=null;
-//        try {
-//
-//            System.out.println("-----------------------load data -------------" + urls);
-//            URL url = new URL(urls);
-//
-//            connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-//
-//            InputStream is = connection.getInputStream();
-//             document = PDDocument  .load(is);
-//
-//            PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-//            stripper.setSortByPosition(true);
-//
-//            PDFTextStripper tStripper = new PDFTextStripper();
-//
-//            String pdfFileInText = tStripper.getText(document);
-//
-//            // split by whitespace
-//            String lines[] = pdfFileInText.split("\\r?\\n");
-//            notes=  String.join(" ", lines);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }finally {
-//            if (document != null) {
-//                document.close();
-//            }
-//
-//        }
-//        return notes;
-//    }
 
 
 
