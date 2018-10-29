@@ -14,6 +14,9 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Service
+/*
+Used for search Elastic News
+ */
 public class ElasticNewsWebService {
 
     @Autowired
