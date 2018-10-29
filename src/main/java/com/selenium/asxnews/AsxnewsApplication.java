@@ -1,69 +1,53 @@
 package com.selenium.asxnews;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
-@EnableScheduling
+import java.io.File;
+import java.sql.Driver;
+import java.util.concurrent.TimeUnit;
 
-public class AsxnewsApplication  implements CommandLineRunner
-{
+public class AsxnewsApplication {
+}
 
-    public static void main(String[] args) {
-        SpringApplication.run(AsxnewsApplication.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-//        File src = new File("E:\\Java\\lib3\\chromedriver.exe");
-////        File src = new File("/mydev/drivers/chromedriver");
-//      //  File src = new File("/usr/bin/chromedriver");
+// @SpringBootApplication
+//@EnableScheduling
 //
+//public class AsxnewsApplication
+//{
+//    @Value( "${selenium.pathfile}" )
+//    private String seleniumpath;
 //
+//    @Bean
+//    public WebDriver webdriver(){
+//        File src = new File(seleniumpath);
 //
 //        System.out.println("START  AsxNewsChromeBrowser: ");
 //        System.setProperty("webdriver.chrome.driver", src.getAbsolutePath());
 //
-//        String content = new String(Files.readAllBytes(Paths.get("e:\\html.txt")));
-        //System.out.println(content);
-//        WebDriver driver = new ChromeDriver();
-//        String html = "";
-//        try {
-//            //String url = "http://www.asx.com.au/asx/statistics/todayAnns.do"; // today
+//        WebDriver driver;
+//        ChromeOptions ChromeOptions = new ChromeOptions();
+//        // ChromeOptions.addArguments("--headless", "window-size=1024,768", "--no-sandbox");
+//        driver = new ChromeDriver(ChromeOptions);
+//        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS); // just after you have initiated browser
+//        return driver;
+//    }
 //
-//            String url ="http://www.asx.com.au/asx/statistics/prevBusDayAnns.do"; // yesterday
-//            System.out.println("------URL :" + url);
-//            driver.get(url);
 //
-//            try {
-//                Thread.sleep(3000);
-//                // System.out.println( "out: "+driver.getPageSource() );
-//                System.out.println("  AsxNewsChromeBrowser get page: ");
-//                html = driver.getPageSource();
-//                System.out.println("------html :" + html);
+//    public static void main(String[] args) {
+//        SpringApplication.run(AsxnewsApplication.class, args);
+//    }
 //
-//                driver.quit();
-//                new AsxNewsString(html);
-//            } catch (Exception e) {
-//                System.out.println("driver page : " + e);
-//                //logger.severe("AsxNewsChromeBrowser driver fail to get page  " + e);
 //
-//            }
+//}
 //
-//        } catch (Exception e) {
-////            logger.severe("AsxNewsChromeBrowser Err  " + e);
-//            System.out.println("------Exception :" + e);
-//        }
-//
-//        finally {
-//            // driver.quit();
-//        }
-//        System.out.println("Run news parser : ");
-      //  new AsxNewsString(content);
-//
-//        System.out.println("FINISH : ");
-//        logger.info("AsxNewsChromeBrowser FINISH ");
-    }
-}
+
+
+
