@@ -25,6 +25,7 @@ public class AsxNewsDocument  {
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
    // @Field(type = FieldType.Date, format = DateFormat.basic_date)
     //private LocalDate date;
+    //must be in STRING , elastic cant convert LocalDate object  - DateTimeFormatter.ofPattern("dd/MM/yy")
     private String date;
 
     public AsxNewsDocument(){
@@ -39,7 +40,13 @@ public class AsxNewsDocument  {
      //  date = LocalDate.now();
 
     }
+    public AsxNewsDocument(String code, String title,  String link, String  date) {
+        this.code = code;
+        this.title = title;
+        this.link = link;
+        this.date = date;
 
+    }
     @Override
     public String toString() {
         return "AsxNewsDocument{" +
