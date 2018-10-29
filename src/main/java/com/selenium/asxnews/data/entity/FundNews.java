@@ -7,6 +7,9 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/*
+    THis is used for add news
+ */
 public class FundNews {
 
     private String code;
