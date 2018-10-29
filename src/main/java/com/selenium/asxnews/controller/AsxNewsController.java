@@ -9,7 +9,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -31,15 +33,24 @@ public class AsxNewsController {
 
     }
 
-    @GetMapping("/all")
-    public void all() {
-        elasticNewsService.setLoopElasticNews();
+    @GetMapping("/importpage")
+    public void all(@RequestParam int page ) {
+        System.out.println("Rimportpage --  : " + page);
+        elasticNewsService.importnewsbypage(page );
 
+    }
+    //@Scheduled(cron = "0 16 15 ? * MON-FRI")
+    @GetMapping("/import")
+    public String  imports() {
+        System.out.println("Run news parser : ");
+     //   elasticNewsService.importElasticNews(true);
+        elasticNewsService.importnewsbydate();
+        return "running import now ";
     }
 
         @GetMapping("/news")
     public ArrayList<FundNews> news() {
-
+/*
         System.out.println("---------------------file "+ seleniumpath);
         File src = new File(seleniumpath);
         ArrayList<FundNews> arr = new ArrayList<>();
@@ -98,7 +109,8 @@ public class AsxNewsController {
         elasticNewsService.importElasticNews(true);
         return arr;
 
-
+*/
+    return null;
         //System.out.println("FINISH : ");
     }
 
