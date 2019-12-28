@@ -16,6 +16,7 @@ public class DailySched {
     public void run(){
       //  fundNewsService.importElasticNews(true);
   //      elasticNewsService.importnews(true);
+        System.out.println("-------------------RUN SCHELD---------------------"  + elasticNewsService);
         elasticNewsService.importnewsbydate();
     }
 

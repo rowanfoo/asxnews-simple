@@ -1,9 +1,8 @@
 package com.selenium.asxnews;
 
 import com.selenium.asxnews.controller.AsxNewsController;
-import com.selenium.asxnews.data.entity.AsxNewsDocument;
-import com.selenium.asxnews.data.entity.FundNews;
-import com.selenium.asxnews.data.repo.AsxNewsRepo;
+import com.selenium.asxnews.data.entity.News;
+import com.selenium.asxnews.data.repo.NewsRepo;
 import com.selenium.asxnews.parser.AsxNewsParser;
 import com.selenium.asxnews.service.ElasticNewsService;
 import com.selenium.asxnews.service.HtmlPage;
@@ -12,7 +11,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,14 +37,12 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -54,7 +50,7 @@ public class AsxnewsApplicationTests {
     @Autowired
     AsxNewsController asxNewsController;
     @Resource
-    AsxNewsRepo asxNewsRepo;
+    NewsRepo newsRepo;
 @Autowired
 
 ElasticNewsService fundNewsService;
@@ -119,7 +115,7 @@ ElasticNewsService fundNewsService;
 //        SearchQuery searchQuery = new NativeSearchQueryBuilder()
 //                .withQuery(matchQuery("notes", "lowest cost "))
 //                .build();
-//        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList(searchQuery, AsxNewsDocument.class);
+//        List<News> articles = elasticsearchTemplate.queryForList(searchQuery, News.class);
 //
 //        System.out.println("----------------------QUERY---------------"+searchQuery.getQuery());
 //
@@ -135,7 +131,7 @@ ElasticNewsService fundNewsService;
 
 
 
-        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList( searchQuery, AsxNewsDocument.class);
+        List<News> articles = elasticsearchTemplate.queryForList( searchQuery, News.class);
         System.out.println("----------------------QUERY---------------"+searchQuery.getQuery());
         articles.forEach((a)->{ System.out.println("---------------------datessssssss----------------"+a.getId() +" : " +   a.getTitle()+ "  " + a.getDate());        } );
 
@@ -149,7 +145,7 @@ ElasticNewsService fundNewsService;
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(matchQuery("notes", "lowest cost "))
                 .build();
-        List<AsxNewsDocument> articles = elasticsearchTemplate.queryForList(searchQuery, AsxNewsDocument.class);
+        List<News> articles = elasticsearchTemplate.queryForList(searchQuery, News.class);
         articles.forEach((a)->{ System.out.println("---------------------datessssssss----------------"+a.getId() +" : " +   a.getTitle());        } );
        // System.out.println("---------------------datessssssss----------------"+ articles);
 
@@ -169,12 +165,12 @@ String date = "29/05/18 07:32";
 
     @Test
     public void testrepo() {
-        AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
+        News asxnewsdoc = new News();
         asxnewsdoc.setCode("test");
         asxnewsdoc.setTitle("test");
         asxnewsdoc.setNotes("test");
 
-        asxNewsRepo.save(asxnewsdoc);
+        newsRepo.save(asxnewsdoc);
     }
     @Test
     public void testrunAsxNews() {
@@ -235,7 +231,7 @@ String date = "29/05/18 07:32";
     public void soupTwo() {
         String urls =  "https://hotcopper.com.au/announcements/";
         Document doc = null;
-        ArrayList<AsxNewsDocument> arr = new ArrayList<>();
+        ArrayList<News> arr = new ArrayList<>();
 
         try {
 
@@ -251,7 +247,7 @@ String date = "29/05/18 07:32";
             for(int j=0;j<links.size();j++) {
                 link = links.get(j);
                 Elements elems = link.children();
-                AsxNewsDocument asxnewsdoc = new AsxNewsDocument();
+                News asxnewsdoc = new News();
                 //elems.forEach((a)->{
                 for (Element a : elems) {
                     //System.out.println("******************************"+a.hasClass("listblock file-size extra-small-hide") );
@@ -271,9 +267,9 @@ String date = "29/05/18 07:32";
                       //  System.out.println("------------summary---------------"+a.children().first().attr("abs:href"));
                         asxnewsdoc.setLink (a.children().first().attr("abs:href"));
 
-                        System.out.println("---------------------parseNews----------------"+asxnewsdoc);
+                       // System.out.println("---------------------parseNews----------------"+asxnewsdoc);
                         arr.add(asxnewsdoc);
-                        asxnewsdoc = new AsxNewsDocument();
+                        asxnewsdoc = new News();
                     }
 
                 }
@@ -452,7 +448,7 @@ String date = "29/05/18 07:32";
         String s = page.getPage(url);
 //        System.out.println("---------------------soup4----------------" + s) ;
         System.out.println("---------------------soup4- class---------------" + hotcopperParser.getClass().getName() ) ;
-        ArrayList<AsxNewsDocument> arr = hotcopperParser.parse(s);
+        ArrayList<News> arr = hotcopperParser.parse(s);
         arr.forEach(a->{
 
             System.out.println("---------------------soup4----------------" + a) ;
@@ -492,7 +488,7 @@ String date = "29/05/18 07:32";
     @Test
     public void runjob() {
         System.out.println("---------------------runjob----------------");
-        asxNewsController.news ();
+       // asxNewsController.news ();
     }
 
 

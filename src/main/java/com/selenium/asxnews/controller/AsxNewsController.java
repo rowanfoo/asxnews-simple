@@ -4,6 +4,8 @@ import com.selenium.asxnews.data.entity.FundNews;
 import com.selenium.asxnews.parser.AsxNewsParser;
 
 import com.selenium.asxnews.service.ElasticNewsService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -36,18 +38,22 @@ public class AsxNewsController {
     /*
         import to what page
      */
-    @GetMapping("/importpage")
-    public void all(@RequestParam int page ) {
-        System.out.println("Rimportpage --  : " + page);
-        elasticNewsService.importnewsbypage(page );
-
-    }
 
     /*
         Schedule import by date , or can be manually trigger
      */
     //@Scheduled(cron = "0 16 15 ? * MON-FRI")
+
+
+    @GetMapping("/importpage")
+    @ApiOperation(value = "import page NUMBER",  notes = "Manually import  news , pass it number of page numbers")
+    public void all(@ApiParam(required = true, name = "page", value = "number of pages to import") @RequestParam int page ) {
+        System.out.println("Rimportpage --  : " + page);
+        elasticNewsService.importnewsbypage(page );
+
+    }
     @GetMapping("/import")
+    @ApiOperation(value = "Auto import news base on today date",  notes = "Auto import pages  by a scheduler , will import news until today date")
     public String  imports() {
         System.out.println("Run news parser : ");
         elasticNewsService.importnewsbydate();

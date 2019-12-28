@@ -1,11 +1,10 @@
 package com.selenium.asxnews.parser;
 
-import com.selenium.asxnews.data.entity.AsxNewsDocument;
-import com.selenium.asxnews.data.entity.FundNews;
+import com.selenium.asxnews.data.entity.News;
 
 import java.util.ArrayList;
 
 public interface AsxNewsParser {
-    public ArrayList<AsxNewsDocument> parse(String content);
+    public ArrayList<News> parse(String content);
 
 }

@@ -1,17 +1,14 @@
 package com.selenium.asxnews.parser;
 
-import com.selenium.asxnews.data.entity.AsxNewsDocument;
-import com.selenium.asxnews.data.entity.FundNews;
+import com.selenium.asxnews.data.entity.News;
 import lombok.SneakyThrows;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -29,13 +26,17 @@ public class HotcopperParser implements  AsxNewsParser
         String baseurl;
     @SneakyThrows
     @Override
-    public ArrayList<AsxNewsDocument> parse(String content) {
-
-        ArrayList<AsxNewsDocument> arrayList = new ArrayList<>();
+    public ArrayList<News> parse(String content) {
+        System.out.println("-----------PARSE START-------- "   );
+        ArrayList<News> arrayList = new ArrayList<>();
         Document doc = Jsoup.parse(content);
-        Elements rows = doc.select("table[class*=table is-fullwidth is-hidden-touch]").get(0).select("tr");
 
+
+        Elements rows = doc.select("table[class*=table is-fullwidth is-hidden-touch]").get(0).select("tr");
+      //  System.out.println("-----------PARSE row -------- "   + rows );
         rows.forEach(a->{
+            //System.out.println("-----------PARSE a -------- "   + a);
+
             if( ! a.select("td").isEmpty()  ){
 //                System.out.println("---------------------ele-------- "  + a.select("td").get(0).text() );
 //                System.out.println("---------------------ele 1-------- "  + a.select("td").get(1).text() );
@@ -60,7 +61,7 @@ public class HotcopperParser implements  AsxNewsParser
                     System.out.println("---------------------PARESER -----"+e);
                 }
 
-                arrayList.add(  new  AsxNewsDocument(a.select("td").get(0).text(), a.select("td").get(1).text(),
+                arrayList.add(  new News(a.select("td").get(0).text(), a.select("td").get(1).text(),
                         baseurl+a.select("td").get(4).select("a").first().attr("href") , localDate.toString()) );
             }
 

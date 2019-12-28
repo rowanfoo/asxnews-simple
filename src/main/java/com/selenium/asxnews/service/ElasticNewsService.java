@@ -1,45 +1,25 @@
 package com.selenium.asxnews.service;
 
-import com.selenium.asxnews.data.entity.AsxNewsDocument;
-import com.selenium.asxnews.data.repo.AsxNewsRepo;
+import com.selenium.asxnews.data.entity.News;
+import com.selenium.asxnews.data.repo.NewsRepo;
 import com.selenium.asxnews.parser.AsxNewsParser;
 import com.selenium.asxnews.util.Loadhref;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.text.PDFTextStripperByArea;
-import org.apache.tomcat.jni.Local;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Log
 public class ElasticNewsService {
 
     @Resource
-    AsxNewsRepo asxNewsRepo;
+    NewsRepo newsRepo;
     String urls =  "";
 
     @Autowired
@@ -60,7 +40,7 @@ public class ElasticNewsService {
     /**
      * import to what page no
      */
-    public   void importnewsbypage(int pageno) {
+    public   void  importnewsbypage(int pageno) {
         importnews(false , pageno);
 
     }
@@ -72,13 +52,15 @@ public class ElasticNewsService {
         page.loadbasePage();
         int stop=28;
         if (!stopdate)stop =end ;
+    //    System.out.println( "----- setLoopElasticNews-   stop -------"  + end );
 
 
         for (int x =0;x<stop;x++){
 
             urls ="https://hotcopper.com.au/announcements/asx/page-"+x +"/";
+            System.out.println( "----- URLS   -------"  + urls );
             String s = page.getPage(urls);
-            ArrayList<AsxNewsDocument> arr =hotcopperParser.parse(s);
+            ArrayList<News> arr =hotcopperParser.parse(s);
             log.info("------------ URLS--" + urls);
 
             if(stopdate){
@@ -99,13 +81,16 @@ public class ElasticNewsService {
 
                 if(text != null){
                     a.setNotes(text);
-                    asxNewsRepo.save(a);
+                    newsRepo.save(a);
                     log.info( "----- SAVE--------" +a.getCode()   +  "   index:  "+ a.getDate()  );
                 };
 
             });
 
         }
+
+
+        System.out.println("---------------------END IMPORTING  -----");
     }
 
 
